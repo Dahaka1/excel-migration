@@ -24,3 +24,4 @@ if __name__ == '__main__':
 			  'Резервная копия исходного файла - в "backup".')
 	except:
 		print(format_exc())
+		print()
