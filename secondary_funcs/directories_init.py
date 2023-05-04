@@ -6,13 +6,14 @@ import data
 
 
 def init() -> NoReturn:
-	folder = data.config()[1]
-	if not os.path.exists(folder):
-		os.mkdir(folder)
-	if not os.path.exists(f'{folder}/districts'):
-		os.mkdir(f'{folder}/districts')
-	if not os.path.exists(f'{folder}/managers'):
-		os.mkdir(f'{folder}/managers')
+	filename, folder = data.config()
+	if os.path.exists(filename):
+		if not os.path.exists(folder):
+			os.mkdir(folder)
+		if not os.path.exists(f'{folder}/districts'):
+			os.mkdir(f'{folder}/districts')
+		if not os.path.exists(f'{folder}/managers'):
+			os.mkdir(f'{folder}/managers')
 
 
 def init_secondary(path) -> NoReturn:

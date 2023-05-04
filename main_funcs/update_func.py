@@ -2,9 +2,12 @@ import data
 import secondary_funcs
 from classes.employee import *
 
-workers = secondary_funcs.find_all_workers()
-main_folder = data.config()[1]
-workers_params = secondary_funcs.unpack_workers(workers)
+
+def general_params():
+	workers = secondary_funcs.find_all_workers()
+	workers_params = secondary_funcs.unpack_workers(workers)
+	main_folder = data.config()[1]
+	return workers_params, main_folder
 
 
 def create_general_workbook():
@@ -12,6 +15,7 @@ def create_general_workbook():
 	folder_name = "districts"
 	# sorting by districts
 	districts_dict = dict()
+	workers_params, main_folder = general_params()
 	for unit in workers_params:
 		try:
 			districts_dict[unit[0]].append(unit)
@@ -36,6 +40,7 @@ def create_managers_workbooks():
 	folder_name = "managers"
 	# sorting by managers
 	managers_dict = dict()
+	workers_params, main_folder = general_params()
 	for unit in workers_params:
 		try:
 			managers_dict[unit[4]].append(unit)
@@ -57,6 +62,7 @@ def create_managers_workbooks():
 
 
 def updating() -> NoReturn:
+	main_folder = general_params()[1]
 	secondary_funcs.secondary_directories_init(main_folder)
 	create_general_workbook()
 	create_managers_workbooks()
