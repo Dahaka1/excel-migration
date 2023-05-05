@@ -1,9 +1,14 @@
+from typing import Optional
+
+import data
 import secondary_funcs
 from classes.employee import Worker
-import data
 
 
-def find_workers() -> list:
+def find_workers() -> Optional[list]:
+	"""
+	:return: list of all units available in main Excel table
+	"""
 	sheets_names = data.general_file_sheets_names()
 	if secondary_funcs.files_checking():
 		workers_worksheet = secondary_funcs.read_main_file(sheet_name=sheets_names[0])
@@ -23,3 +28,4 @@ def find_workers() -> list:
 				counter += 1
 			else:
 				return workers_list
+	return None

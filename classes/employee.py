@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Optional, NoReturn, Any
+from typing import Optional, Any
 
 from data.additional_info import months
 
@@ -13,7 +13,7 @@ class WorkingPosition:
 		self.worksheet = worksheet
 
 		self.name = name
-		self.excel_file_row_number: int = self.find_row()
+		self.excel_file_row_number: Optional[int] = self.find_row()
 		self.updating_date: Optional[date] = self.find_updating_date() if not self.excel_file_row_number is None else None
 
 	def find_updating_date(self) -> Optional[date]:
@@ -75,7 +75,7 @@ class Worker:
 			else:
 				raise StopIteration(f"Ошибка: на найден сотрудник {self.fullname} в основной таблице!")
 
-	def find_params(self) -> NoReturn:
+	def find_params(self) -> tuple:
 		district, working_position, manager = \
 			[self.worksheets[0][f"{col}{self.excel_file_row_number}"].value for col in ["A", "C", "E"]]
 		return district, WorkingPosition(name=working_position, worksheet=self.worksheets[1]), manager

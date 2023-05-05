@@ -1,13 +1,10 @@
-from typing import NoReturn, Any
-
 from openpyxl import Workbook
 from openpyxl.styles import Font
 
-import data
 from data.additional_info import *
 
 
-def create_excel_table(sheets_info: dict) -> NoReturn:
+def create_excel_table(sheets_info: dict) -> Workbook:
 	"""
 	:param sheets_info: dict with sheet names as keys and title columns as values
 	"""
@@ -46,9 +43,9 @@ def sheet_get_params(file_type: str) -> dict:
 	}
 
 
-def format_columns(workbook: Any, sheet_name: str) -> Any:
+def format_columns(workbook: Workbook, sheet_name: str) -> Workbook:
 	worksheet = workbook[sheet_name]
-	dims = {}
+	dims: dict = {}
 	for row in worksheet.rows:
 		for cell in row:
 			if not cell.value is None:

@@ -5,7 +5,6 @@ import data
 import main_funcs
 import secondary_funcs
 
-
 main_file_name, file_folder = data.config()
 
 

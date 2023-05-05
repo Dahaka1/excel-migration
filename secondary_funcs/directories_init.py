@@ -1,14 +1,12 @@
 import os
 import os.path
-from typing import NoReturn
 
 import data
-
 
 sub_folders_names = data.folder_names()
 
 
-def init() -> NoReturn:
+def init() -> None:
 	filename, folder = data.config()
 	if os.path.exists(filename):
 		if not os.path.exists(folder):
@@ -19,7 +17,7 @@ def init() -> NoReturn:
 			os.mkdir(f'{folder}/{sub_folders_names[0]}')
 
 
-def init_secondary(path) -> NoReturn:
+def init_secondary(path) -> None:
 	paths = sub_folders_names
 	for p in paths:
 		if not os.path.exists(f"{path}/{p}"):

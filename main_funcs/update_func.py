@@ -1,6 +1,5 @@
 import data
 import secondary_funcs
-from classes.employee import *
 
 
 folder_names = data.folder_names()
@@ -66,13 +65,13 @@ def create_managers_workbooks():
 			workbook.close()
 
 
-def updating() -> NoReturn:
+def updating() -> None:
 	main_folder = general_params()[1]
 	secondary_funcs.secondary_directories_init(main_folder)
 	create_general_workbook()
 	create_managers_workbooks()
 
 
-def update_files() -> NoReturn:
+def update_files() -> None:
 	updating()
 
