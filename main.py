@@ -2,6 +2,7 @@ import os.path
 import data
 import main_funcs
 import secondary_funcs
+from traceback import format_exc
 
 main_file_name, file_folder = data.config()
 
@@ -21,3 +22,4 @@ if __name__ == '__main__':
 			  'Резервная копия исходного файла - в "backup".')
 	except Exception as e:
 		print(e)
+	input()

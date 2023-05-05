@@ -6,6 +6,7 @@ from secondary_funcs.read_employees import find_workers
 from secondary_funcs.read_excel import *
 from secondary_funcs.unpacking import unpack
 from secondary_funcs.write_excel import *
+from secondary_funcs.directories_init import init_district_folder
 
 from openpyxl.workbook import Workbook
 
@@ -48,3 +49,7 @@ def auto_format_columns(workbook: Workbook, sheet_name: str) -> Workbook:
 
 def files_checking() -> bool:
 	return main_file_checking()
+
+
+def sub_folder_init(district) -> str:
+	return init_district_folder(district)
