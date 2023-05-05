@@ -21,5 +21,5 @@ def copy_files():
 		copy_file('backup')
 		copy_file(file_path)
 	else:
-		raise FileNotFoundError('Исходный файл не найден! Он должен быть в директории со скриптом, называться "Список '
-								'сотрудников" и иметь тип Excel-файла (.xlsx).')
+		raise FileNotFoundError(f'Исходный файл не найден! Он должен быть в директории со скриптом, называться "{main_file_name}"'
+								' и иметь тип Excel-файла (.xlsx).')

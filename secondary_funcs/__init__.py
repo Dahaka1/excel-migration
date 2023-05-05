@@ -3,7 +3,7 @@ from secondary_funcs.read_employees import find_workers
 from secondary_funcs.read_excel import *
 from secondary_funcs.unpacking import unpack
 from secondary_funcs.write_excel import *
-from secondary_funcs.deprecate import main_file_checking
+from secondary_funcs.depricate import main_file_checking
 
 
 def read_main_file(sheet_name: str) -> Any:

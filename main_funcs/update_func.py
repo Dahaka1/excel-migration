@@ -3,6 +3,9 @@ import secondary_funcs
 from classes.employee import *
 
 
+folder_names = data.folder_names()
+
+
 def general_params():
 	workers = secondary_funcs.find_all_workers()
 	workers_params = secondary_funcs.unpack_workers(workers)
@@ -11,8 +14,9 @@ def general_params():
 
 
 def create_general_workbook():
-	excel_file_params = secondary_funcs.sheet_params(excel_file_type='districts')
-	folder_name = "districts"
+	folder_name = folder_names[1]
+	excel_file_params = secondary_funcs.sheet_params(excel_file_type=folder_name)
+	main_sheet_name = data.districts_main_sheet_name()
 	# sorting by districts
 	districts_dict = dict()
 	workers_params, main_folder = general_params()
@@ -27,17 +31,18 @@ def create_general_workbook():
 			district_workers = sorted(districts_dict[district], key=lambda params: params[0])
 			filepath = f"{main_folder}/{folder_name}/{district_name}.xlsx"
 			workbook = secondary_funcs.create_excel(excel_file_params)
-			worksheet = workbook["Общий"]
+			worksheet = workbook[main_sheet_name]
 			for worker in district_workers:
 				worksheet.append(worker)
-			workbook = secondary_funcs.format_columns(workbook, sheet_name="Общий")  # auto-adjusting
+			workbook = secondary_funcs.format_columns(workbook, sheet_name=main_sheet_name)  # auto-adjusting
 			workbook.save(filepath)
 			workbook.close()
 
 
 def create_managers_workbooks():
-	excel_file_params = secondary_funcs.sheet_params(excel_file_type='managers')
-	folder_name = "managers"
+	folder_name = folder_names[0]
+	excel_file_params = secondary_funcs.sheet_params(excel_file_type=folder_name)
+	main_sheet_name = data.manager_main_sheet_name()
 	# sorting by managers
 	managers_dict = dict()
 	workers_params, main_folder = general_params()
@@ -53,10 +58,10 @@ def create_managers_workbooks():
 			business_unit = managers_dict[manager][0][0]
 			filepath = f"{main_folder}/{folder_name}/{business_unit} - {manager_name}.xlsx"
 			workbook = secondary_funcs.create_excel(excel_file_params)
-			worksheet = workbook["Менеджер"]
+			worksheet = workbook[main_sheet_name]
 			for worker in manager_workers:
 				worksheet.append(worker)
-			workbook = secondary_funcs.format_columns(workbook, sheet_name="Менеджер")  # auto-adjusting
+			workbook = secondary_funcs.format_columns(workbook, sheet_name=main_sheet_name)  # auto-adjusting
 			workbook.save(filepath)
 			workbook.close()
 

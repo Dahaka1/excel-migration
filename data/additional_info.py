@@ -1,3 +1,6 @@
+import data
+
+
 def months() -> dict:
 	months_list = [
 		'январь',
@@ -16,21 +19,13 @@ def months() -> dict:
 
 
 def district_subfile_columns_names() -> list:
-	columns = [
-		"BU",
-		"ФИО",
-		"Должность",
-		"Дата выплаты",
-		"Менеджер"
-	]
+	columns = data.subfile_file_base_columns_titles()
 	return columns
 
 
 def manager_subfile_columns_names() -> list:
 	columns = district_subfile_columns_names()
-	add_columns = [
-		'Бонус из приказа'
-	]
+	add_columns = data.managers_additional_columns()
 	columns.extend(add_columns)
 	return columns
 

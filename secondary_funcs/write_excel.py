@@ -34,10 +34,11 @@ def sheet_get_params(file_type: str) -> dict:
 	:param file_type: districts/managers
 	:return: dict with params like {sheet_name: sheet_titles}
 	"""
-	if file_type == 'managers':
+	folder_names = data.folder_names()
+	if file_type == folder_names[0]:
 		sheet_name = data.manager_main_sheet_name()
 		title_columns = manager_subfile_columns_names()
-	elif file_type == 'districts':
+	elif file_type == folder_names[1]:
 		sheet_name = data.districts_main_sheet_name()
 		title_columns = district_subfile_columns_names()
 	return {
