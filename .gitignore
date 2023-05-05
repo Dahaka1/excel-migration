@@ -4,3 +4,4 @@ backup
 output
 data/__init__.py
 data/config.json
+example

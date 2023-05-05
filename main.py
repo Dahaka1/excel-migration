@@ -1,6 +1,5 @@
 import os.path
 from traceback import format_exc
-
 import data
 import main_funcs
 import secondary_funcs
