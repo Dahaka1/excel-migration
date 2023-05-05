@@ -1,5 +1,4 @@
 import os.path
-from traceback import format_exc
 import data
 import main_funcs
 import secondary_funcs
@@ -20,6 +19,5 @@ if __name__ == '__main__':
 		print("Сделано!\n"
 			  f'Результат находится в папке "{file_folder}".\n'
 			  'Резервная копия исходного файла - в "backup".')
-	except:
-		print(format_exc())
-		print()
+	except Exception as e:
+		print(e)
