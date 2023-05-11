@@ -1,4 +1,5 @@
 from openpyxl import load_workbook
+from openpyxl.workbook import Workbook
 from openpyxl.worksheet.worksheet import Worksheet
 
 import data
@@ -17,3 +18,8 @@ def read_subfile(filepath):
 	workbook = load_workbook(filepath)
 	worksheet = workbook.active
 	return workbook, worksheet
+
+
+def main_workbook_read() -> Workbook:
+	workbook = load_workbook(f"{file_path}/{main_file_name}")
+	return workbook

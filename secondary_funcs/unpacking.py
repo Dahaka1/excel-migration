@@ -11,7 +11,8 @@ def unpack(units_list) -> Optional[tuple]:
 			 worker.fullname,
 			 worker.working_position.name,
 			 worker.updating_date,
-			 worker.manager_name) for worker in units_list
+			 worker.manager_name,
+			 worker.excel_file_row_number) for worker in units_list
 		]
 		return tuple(unpacked_workers)
 	return None

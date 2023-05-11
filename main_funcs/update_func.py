@@ -1,6 +1,5 @@
-import data
 import secondary_funcs
-
+from data.additional_info import *
 
 sub_main_folder_name = data.sub_main_folder_name()
 excel_params = data.excel_params()
@@ -40,6 +39,8 @@ def create_general_workbook():
 
 
 def create_managers_workbooks():
+	main_file_workbook, main_file_name, main_file_main_sheet_name = secondary_funcs.main_workbook(), data.config()[0], data.main_sheet_name()
+	main_worksheet = main_file_workbook[main_file_main_sheet_name]
 	excel_file_params = secondary_funcs.sheet_params(excel_file_type=excel_params[1])
 	main_sheet_name = data.manager_main_sheet_name()
 	# sorting by managers
@@ -60,10 +61,16 @@ def create_managers_workbooks():
 			workbook = secondary_funcs.create_excel(excel_file_params)
 			worksheet = workbook[main_sheet_name]
 			for worker in manager_workers:
-				worksheet.append(worker)
-			workbook = secondary_funcs.format_columns(workbook, sheet_name=main_sheet_name)  # auto-adjusting
+				worksheet.append(worker[:-1])
+				# adding some formulas
+				# cannot add it using additional packages funcs - updating main workbook problem
+				main_file_worker_row = worker[-1]
+				row = manager_workers.index(worker) + 2
+				bonus_column = data.bonus_column()
+				main_worksheet[f"{bonus_column}{main_file_worker_row}"].value = bonus_formula(bonus_column, row, worker)
+			workbook = secondary_funcs.auto_format_columns(workbook, sheet_name=main_sheet_name)  # auto-adjusting
 			workbook.save(filepath)
-			workbook.close()
+	main_file_workbook.save(f"{main_folder}/{main_file_name}")
 
 
 def updating() -> None:
@@ -75,4 +82,3 @@ def updating() -> None:
 
 def update_files() -> None:
 	updating()
-

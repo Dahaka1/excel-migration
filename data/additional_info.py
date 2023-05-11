@@ -29,3 +29,14 @@ def manager_subfile_columns_names() -> list:
 	columns.extend(add_columns)
 	return columns
 
+
+def bonus_formula(column: str, row: int, worker: tuple) -> str:
+	district, manager_name = worker[0], worker[4]
+	# main_file_row = worker[5]
+	# main_file_cell = f'B{main_file_row}'
+	manager_sheet_name = data.manager_main_sheet_name()
+	bonus_cell = f'${column}${row}'
+	sub_files_folder = data.sub_main_folder_name()
+	file_name = f'{district}_{manager_name}.xlsx'
+	formula = f"='[\\{sub_files_folder}\\{district}\\{file_name}]{manager_sheet_name}'!{bonus_cell}"
+	return formula

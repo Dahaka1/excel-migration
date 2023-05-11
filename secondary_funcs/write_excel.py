@@ -1,6 +1,7 @@
 from openpyxl import Workbook
 from openpyxl.styles import Font
 
+import data
 from data.additional_info import *
 
 
