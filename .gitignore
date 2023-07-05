@@ -1,0 +1,7 @@
+logs.log
+__pycache__
+.idea
+.git
+script/config.py
+Список сотрудников.xlsx
+output
