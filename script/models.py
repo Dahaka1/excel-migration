@@ -106,7 +106,7 @@ class Manager:
 		fileout_path = f"{output_dir}/{self.name}.xlsx"
 		if not os.path.exists(f"{output_dir}"):
 			os.mkdir(output_dir)
-		wb = format_sheets(wb=wb, add_protection=True)
+		wb = format_sheets(wb=wb, add_protection_and_validation=True)
 		wb.save(filename=fileout_path)
 
 		return len(self.workers)
@@ -148,7 +148,7 @@ class Manager:
 					 worker.paying_date]
 				)
 				written_workers += 1
-			wb = format_sheets(wb=wb, add_protection=False)
+			wb = format_sheets(wb=wb, add_protection_and_validation=False)
 			wb.save(filename=fileout_path)
 
 		return written_workers

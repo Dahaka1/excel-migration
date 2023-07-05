@@ -5,3 +5,5 @@ __pycache__
 script/config.py
 Список сотрудников.xlsx
 output
+build
+main.spec

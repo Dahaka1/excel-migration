@@ -5,6 +5,7 @@ import openpyxl
 from openpyxl.cell import Cell
 from openpyxl.styles import Alignment, Font, Protection
 from openpyxl.worksheet.worksheet import Worksheet
+from openpyxl.worksheet.datavalidation import DataValidation
 from loguru import logger
 
 from . import config
@@ -97,7 +98,7 @@ def create_excel_file(sheet_name: str) -> openpyxl.Workbook:
 	return wb
 
 
-def format_sheets(wb: openpyxl.Workbook, add_protection: bool) -> openpyxl.Workbook:
+def format_sheets(wb: openpyxl.Workbook, add_protection_and_validation: bool) -> openpyxl.Workbook:
 	"""
 	Форматирование Excel-файла
 	"""
@@ -108,7 +109,7 @@ def format_sheets(wb: openpyxl.Workbook, add_protection: bool) -> openpyxl.Workb
 		sheet: Worksheet = wb[sheet_name]
 		first_row = next(sheet.iter_rows())
 
-		if add_protection:
+		if add_protection_and_validation:
 			sheet = add_sheet_protection(sheet, first_row)  # добавить защиту от изменений и валидацию данных
 
 		for cell in first_row:
@@ -135,13 +136,17 @@ def add_sheet_protection(ws: Worksheet, first_row: list[Cell]) -> Worksheet:
 	Но делает возможными для редактирования столбцы, которые указаны как таковые в конфиге.
 	"""
 	not_protected_columns = []
+	columns_aliases_for_data_validation = {}
 	for cell in first_row:
 		try:
 			cell_alias = next(key for key, val in config.MAIN_SHEET_COLUMNS.items() if val == cell.value)
 			if cell_alias in config.PROTECTION_SHEETS_PARAMS["NOT_PROTECTED_COLUMNS"]:
 				not_protected_columns.append(cell.column_letter)  # определяю столбцы, которые можно редактировать
+			if cell_alias in config.CELLS_DATA_VALIDATION:
+				validation_type = config.CELLS_DATA_VALIDATION.get(cell_alias)
+				columns_aliases_for_data_validation.setdefault(cell_alias, validation_type)
 		except StopIteration:
-			continue  # в Output fields есть другие столбцы. Потом мб нужно будет поправить костыль.
+			continue  # В Output fields есть другие столбцы. Потом мб нужно будет поправить костыль.
 
 	ws.protection.sheet = True
 
@@ -150,4 +155,39 @@ def add_sheet_protection(ws: Worksheet, first_row: list[Cell]) -> Worksheet:
 			cell: Cell
 			if cell.column_letter in not_protected_columns:
 				cell.protection = Protection(locked=False)
+
+	if any(columns_aliases_for_data_validation):
+		columns_letters_and_data_validation_types = {}
+		for col_alias in columns_aliases_for_data_validation:
+			validation_type = columns_aliases_for_data_validation.get(col_alias)
+			col_letter = next(c.column_letter for c in first_row if c.value == config.MAIN_SHEET_COLUMNS.get(col_alias))
+			columns_letters_and_data_validation_types.setdefault(col_letter, validation_type)
+		ws = add_cells_validation(ws=ws, columns_letters_and_validation_types=columns_letters_and_data_validation_types)
+
+	return ws
+
+
+def add_cells_validation(ws: Worksheet, columns_letters_and_validation_types: dict[str, str]) -> Worksheet:
+	"""
+	Добавляет валидацию данных для столбцов.
+	"""
+	dv = None
+
+	for col in columns_letters_and_validation_types:
+		validation_type = columns_letters_and_validation_types.get(col)
+		if validation_type == "integer":
+			dv = DataValidation(type="decimal", operator="greaterThanOrEqual",
+								formula1=0, showErrorMessage=True, showDropDown=True)
+			dv.error = "Введите целое число больше или равное нулю"
+			dv.errorTitle = "Неверная сумма"
+			dv.prompt = dv.error
+			dv.promptTitle = "Ввод суммы"
+		if dv:
+			ws.add_data_validation(dv)
+			for row in ws:
+				for cell in row:
+					cell: Cell
+					if cell.column_letter == col:
+						dv.add(cell)
+
 	return ws

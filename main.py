@@ -14,6 +14,7 @@ def main():
 	excel_file = read_excel_file()
 	workers = read_workers(wb=excel_file)
 	write_files(workers=workers)
+	input()
 
 
 if __name__ == '__main__':
