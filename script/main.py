@@ -103,10 +103,9 @@ def write_files(workers: Iterable[Worker]) -> None:
 		managers=handled_managers, workers=workers
 	)
 
-	report_text = f"Файлы по каждому менеджеру и каждому региону успешно отсортированы и записаны. " \
-				  f"Всего в файлах по менеджерам работников определено: {workers_handled_while_writing_managers_files}\n"
+	logger.info(f"Файлы по каждому менеджеру и каждому региону успешно отсортированы и записаны. " + \
+				  f"Всего в файлах по менеджерам работников определено: {workers_handled_while_writing_managers_files}")
 
 	if workers_handled_while_writing_managers_files > workers_handled_while_writing_districts_files:
-		report_text += "Конечное количество обработанных работников больше, ибо у некоторых " \
-					   "менеджеров определены несколько регионов - файлы дублируются в папку каждого региона."
-	logger.info(report_text)
+		logger.info("Конечное количество обработанных работников больше изначального, ибо у некоторых " + \
+					   "менеджеров определены несколько регионов - файлы дублируются в папку каждого региона.")
