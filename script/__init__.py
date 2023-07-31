@@ -1,9 +1,10 @@
 import shutil
 import os
 
-from . import config
-
 from loguru import logger
+
+from . import config
+from .exceptions import RuntimeException
 
 
 def init_project_paths() -> None:
@@ -24,4 +25,4 @@ def check_files_exists() -> None:
 	if not any(
 		(str(file).endswith(".xlsx") for file in os.listdir())
 	):
-		raise RuntimeError("Not any .xlsx files found in project path")
+		raise RuntimeException("Not any .xlsx files found in project path")

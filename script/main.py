@@ -28,7 +28,7 @@ def excel_file_to_list_of_dicts(ws: Worksheet) -> list[dict[str, Any]]:
 	return rows
 
 
-def read_workers(wb: Workbook) -> list[Worker]:
+def read_workers(wb: Workbook) -> tuple[Worker]:
 	"""
 	Считывает строки из файла.
 	Возвращает список работников без определенной даты выплаты за текущий месяц.
@@ -43,34 +43,32 @@ def read_workers(wb: Workbook) -> list[Worker]:
 
 	logger.info(f"Работников с определенным ФИО обнаружено в исходном файле: {len(workers_output)}")
 
-	ws_secondary_name = next(ws for ws in wb.sheetnames if str(ws).lower() == config.NEEDED_SHEETS["SECONDARY_SHEET"])
+	# ws_secondary_name = next(ws for ws in wb.sheetnames if str(ws).lower() == config.NEEDED_SHEETS["SECONDARY_SHEET"])
 
-	return get_workers_paying_dates(
-		workers=workers_output, ws=wb[ws_secondary_name]
-	)
+	return workers_output
 
 
-def get_workers_paying_dates(workers: tuple[Worker], ws: Worksheet) -> list[Worker]:
-	"""
-	Определяет дату выплаты для работника в текущем месяце (по побочному листу).
-	Возвращает генератор с работниками с определенными датами.
-	"""
-	sheet_data = excel_file_to_list_of_dicts(ws=ws)
-	current_month = config.MONTHS[date.today().month - 1]
-	counter = 0
-	for item in sheet_data:
-		if not counter == 0:  # первую строку не надо считывать - заглавная
-			del item[config.SECONDARY_SHEET_COLUMNS.get("PAYING_PERIOD")]  # не нужен этот столбец
-			working_position_name = item.pop(config.SECONDARY_SHEET_COLUMNS.get("DISTRICT_COLUMN"))
-			working_position = WorkingPosition(
-				name=working_position_name, **item
-			)
-			for worker in workers:
-				if worker.working_position.lower().strip() == working_position.name.lower().strip():
-					worker.paying_date = working_position[current_month] or config.NULL_VALUE
-		counter += 1
-
-	return list(workers)
+# def get_workers_paying_dates(workers: tuple[Worker], ws: Worksheet) -> list[Worker]:
+# 	"""
+# 	Определяет дату выплаты для работника в текущем месяце (по побочному листу).
+# 	Возвращает генератор с работниками с определенными датами.
+# 	"""
+# 	sheet_data = excel_file_to_list_of_dicts(ws=ws)
+# 	current_month = config.MONTHS[date.today().month - 1]
+# 	counter = 0
+# 	for item in sheet_data:
+# 		if not counter == 0:  # первую строку не надо считывать - заглавная
+# 			del item[config.SECONDARY_SHEET_COLUMNS.get("PAYING_PERIOD")]  # не нужен этот столбец
+# 			working_position_name = item.pop(config.SECONDARY_SHEET_COLUMNS.get("DISTRICT_COLUMN"))
+# 			working_position = WorkingPosition(
+# 				name=working_position_name, **item
+# 			)
+# 			for worker in workers:
+# 				if worker.working_position.lower().strip() == working_position.name.lower().strip():
+# 					worker.paying_date = working_position[current_month] or config.NULL_VALUE
+# 		counter += 1
+#
+# 	return list(workers)
 
 
 def write_files(workers: Iterable[Worker]) -> None:

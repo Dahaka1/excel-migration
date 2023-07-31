@@ -8,6 +8,7 @@ from openpyxl.worksheet.worksheet import Worksheet
 
 from . import config
 from .data import create_excel_file, format_sheets
+from .exceptions import AttributeException, ValueException, RuntimeException
 
 
 class Worker:
@@ -18,7 +19,7 @@ class Worker:
 		if any(
 			(col not in kwargs for col in config.MAIN_SHEET_COLUMNS.values())
 		):
-			raise AttributeError(f"Didn't get some column value.\n"
+			raise AttributeException(f"Didn't get some column value.\n"
 								 f"Needed columns: {list(config.MAIN_SHEET_COLUMNS.values())}")
 
 		self.district: str = kwargs.get(config.MAIN_SHEET_COLUMNS["DISTRICT_COLUMN"]) or config.NULL_VALUE
@@ -28,7 +29,7 @@ class Worker:
 		self.paying_period: str = kwargs.get(config.MAIN_SHEET_COLUMNS["PAYING_PERIOD"]) or config.NULL_VALUE
 		self.paying_amount: str = kwargs.get(config.MAIN_SHEET_COLUMNS["PAYING_AMOUNT"]) or config.NULL_VALUE
 
-		self.paying_date: str | None = None
+		# self.paying_date: str | None = None
 
 
 class WorkingPosition:
@@ -42,7 +43,7 @@ class WorkingPosition:
 		if not all(
 			(month in months_and_payments_dates_dict for month in config.MONTHS)
 		):
-			raise AttributeError("Not all working position months data was received")
+			raise AttributeException("Not all working position months data was received")
 
 		self.name = name
 		self.months = months_and_payments_dates_dict
@@ -52,7 +53,7 @@ class WorkingPosition:
 		Возвращает дату выплаты по указанному месяцу.
 		"""
 		if item not in self.months:
-			raise AttributeError(f"Getitem only receives month name.")
+			raise AttributeException(f"Getitem only receives month name.")
 		return self.months.get(item)
 
 
@@ -73,7 +74,7 @@ class Manager:
 		if not all(
 			(worker.manager_name == self.name for worker in args)
 		):
-			raise ValueError(f"Manager {self.name} got an non-self workers")
+			raise ValueException(f"Manager {self.name} got an non-self workers")
 		args = sorted(args, key=lambda worker: worker.name)
 		self.workers = []
 		self.workers.extend(args)
@@ -85,7 +86,7 @@ class Manager:
 		Возвращает количество строк, записанных в файл.
 		"""
 		if not any(self.workers):
-			raise RuntimeError(f"Not any workers was defined for manager {self.name}")
+			raise RuntimeException(f"Not any workers was defined for manager {self.name}")
 
 		sheet_name = config.MANAGER_AND_DISTRICTS_MAIN_SHEET_NAME % self.last_name
 		wb = create_excel_file(sheet_name=sheet_name)
@@ -95,11 +96,9 @@ class Manager:
 
 		for worker in self.workers:
 			idx = self.workers.index(worker) + 1
-			if isinstance(worker.paying_date, datetime.datetime):
-				worker.paying_date = worker.paying_date.date()
 			ws.append(
 				[idx, self.business_unit, worker.name, worker.working_position,
-				self.name, worker.paying_period, worker.paying_amount, worker.paying_date]
+				self.name, worker.paying_period, worker.paying_amount]
 			)
 			written_workers += 1
 
@@ -123,7 +122,7 @@ class Manager:
 		if any(
 			(not any(manager.workers) for manager in managers)
 		):
-			raise ValueError(f"Not all managers has defined workers")
+			raise ValueException(f"Not all managers has defined workers")
 		districts_names = set((manager.business_unit for manager in managers))
 
 		written_workers = 0
@@ -144,8 +143,7 @@ class Manager:
 				idx = district_workers.index(worker) + 1
 				ws.append(
 					[idx, district_name, worker.name, worker.working_position,
-					 worker.manager_name, worker.paying_period, worker.paying_amount,
-					 worker.paying_date]
+					 worker.manager_name, worker.paying_period, worker.paying_amount]
 				)
 				written_workers += 1
 			wb = format_sheets(wb=wb, add_protection_and_validation=False)

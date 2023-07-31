@@ -9,6 +9,7 @@ from openpyxl.worksheet.datavalidation import DataValidation
 from loguru import logger
 
 from . import config
+from .exceptions import RuntimeException
 
 
 def read_excel_file() -> openpyxl.Workbook:
@@ -23,10 +24,10 @@ def read_excel_file() -> openpyxl.Workbook:
 				if not all(
 					(sheet in (str(sh).lower() for sh in file.sheetnames) for sheet in config.NEEDED_SHEETS.values())
 				):
-					raise RuntimeError("Not all searched sheets was founded.\n"
+					raise RuntimeException("Not all searched sheets was founded.\n"
 									   f"Searching for sheets: {list(config.NEEDED_SHEETS.values())}")
 			except Exception as e:
-				raise RuntimeError(f"Can't read the Excel file. Exception: ", e)
+				raise RuntimeException(f"Can't read the Excel file. Exception: ", e)
 			break
 
 	check_worksheets(file)
@@ -56,7 +57,7 @@ def check_worksheets(wb: openpyxl.Workbook) -> None:
 		if any(
 			(col not in searched_columns for col in tuple((str(item).strip() for item in columns)))
 		):
-			raise RuntimeError(f"Got an unexpected columns names in sheet '{sheet_name}'.\n"
+			raise RuntimeException(f"Got an unexpected columns names in sheet '{sheet_name}'.\n"
 							   f"Expected columns: {list(searched_columns)}")
 
 	main_sheet_titles = get_sheet_titles(main_worksheet)
