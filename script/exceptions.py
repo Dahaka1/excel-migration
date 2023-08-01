@@ -4,7 +4,8 @@ from loguru import logger
 class Error(Exception):
 	def __init__(self, content: str):
 		logger.error(f"<{self.__class__.__name__}>: {content}")
-		super().__init__(content)
+		input("Press \"Enter\" to exit ")
+		exit(0)
 
 
 class StdException(Error):

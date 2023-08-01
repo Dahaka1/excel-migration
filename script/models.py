@@ -5,6 +5,7 @@ import os
 from typing import Iterable
 
 from openpyxl.worksheet.worksheet import Worksheet
+from loguru import logger
 
 from . import config
 from .data import create_excel_file, format_sheets
@@ -30,6 +31,19 @@ class Worker:
 		self.paying_amount: str = kwargs.get(config.MAIN_SHEET_COLUMNS["PAYING_AMOUNT"]) or config.NULL_VALUE
 
 		# self.paying_date: str | None = None
+
+	@staticmethod
+	def get_updating_info(updated_workers: list[Worker]) -> str:
+		"""
+		Подробности об обновлении работников в основном файле.
+		"""
+		managers_last_names = [f"- {worker.manager_name.split()[0]}" for worker in updated_workers]
+		workers_with_updates = [
+			f"- {worker.name} ('{worker.district}', {worker.manager_name.split()[0]}): выплата {worker.paying_amount}₽"
+			for worker in updated_workers
+		]
+		return f"Менеджеры, внесшие изменения:\n {', '.join(managers_last_names)}\n\n" \
+			   f"Измененные работники:\n" + '\n'.join(workers_with_updates)
 
 
 class WorkingPosition:

@@ -1,5 +1,6 @@
 import os
-from typing import Iterable
+from string import ascii_uppercase
+from typing import Iterable, Any
 
 import openpyxl
 from openpyxl.cell import Cell
@@ -12,34 +13,41 @@ from . import config
 from .exceptions import RuntimeException
 
 
-def read_excel_file() -> openpyxl.Workbook:
+def prepare_excel_file(filename: str) -> openpyxl.Workbook:
 	"""
-	Считывает файл в директории.
+	Подготовка основного excel-файла.
 	"""
-	for filename in os.listdir():
-		if filename.endswith(".xlsx"):
-			try:
-				file: openpyxl.Workbook = openpyxl.load_workbook(filename=filename, data_only=True)
-				main_file_name = filename
-				if not all(
-					(sheet in (str(sh).lower() for sh in file.sheetnames) for sheet in config.NEEDED_SHEETS.values())
-				):
-					raise RuntimeException("Not all searched sheets was founded.\n"
-									   f"Searching for sheets: {list(config.NEEDED_SHEETS.values())}")
-			except Exception as e:
-				raise RuntimeException(f"Can't read the Excel file. Exception: ", e)
-			break
-
-	check_worksheets(file)
+	file = read_excel_file(filename)
 	cleaned_up_wb = cleanup_file_cells(wb=file)
 	if not os.path.exists(config.OUTPUT_PATH):
 		os.mkdir(config.OUTPUT_PATH)
-	cleaned_up_wb.save(filename=f"{config.OUTPUT_PATH}/{main_file_name}")
+	cleaned_up_wb.save(filename=f"{config.OUTPUT_PATH}/{filename}")
 
-	logger.info("Excel-файл обнаружен. Успешно произведена очистка от лишних символов в ячейках. "
-		  f"Записан в папку '{config.OUTPUT_PATH}'.")
+	logger.info("Успешно произведена очистка таблицы от лишних символов в ячейках. "
+		  f"Файл записан в папку '{config.OUTPUT_PATH}'.")
 
 	return cleaned_up_wb
+
+
+def read_excel_file(filepath: str) -> openpyxl.Workbook:
+	"""
+	Чтение основного файла и проверка его содержания.
+	"""
+	try:
+		file: openpyxl.Workbook = openpyxl.load_workbook(filename=filepath, data_only=True)
+		if not all(
+			(sheet in (str(sh).lower() for sh in file.sheetnames) for sheet in config.NEEDED_SHEETS.values())
+		):
+			raise RuntimeException("Not all searched sheets was founded.\n"
+							   f"Searching for sheets: {list(config.NEEDED_SHEETS.values())}")
+	except Exception as e:
+		raise RuntimeException(f"Can't read the Excel file. Exception: {e}")
+
+	check_worksheets(file)
+
+	logger.info(f"Excel-файл '{filepath}' успешно обнаружен и инициализирован.")
+
+	return file
 
 
 def check_worksheets(wb: openpyxl.Workbook) -> None:
@@ -192,3 +200,22 @@ def add_cells_validation(ws: Worksheet, columns_letters_and_validation_types: di
 						dv.add(cell)
 
 	return ws
+
+
+def excel_file_to_list_of_dicts(ws: Worksheet, cut: bool = True) -> list[dict[str, Any]]:
+	"""
+	Форматирует Excel-файл в список словарей (привычный формат данных).
+	"""
+	first_row_number = 1
+	rows = []
+	for row in ws:
+		row_data = {}
+		for cell in row:
+			cell: Cell
+			cell_column_letter = ascii_uppercase[cell.column - 1]
+			cell_column_name = ws[f"{cell_column_letter}{first_row_number}"].value
+			row_data.setdefault(cell_column_name, cell.value)
+		rows.append(row_data)
+	if cut:
+		return rows[1:-1]  # первая строка - заглавная, последняя - пустая ("итоговая")
+	return rows[1:]  # если нет итоговой строки
