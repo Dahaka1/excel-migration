@@ -1,3 +1,4 @@
+import copy
 from typing import Iterable
 
 from openpyxl import Workbook
@@ -58,13 +59,14 @@ def write_files(workers: Iterable[Worker]) -> None:
 	Можно объединить классы в один общий или создать родительский, чтобы упростить код.
 	Но сейчас пока пофиг :)
 	"""
-	all_managers_names = set(((worker.manager_name, worker.district) for worker in workers))
-
+	all_managers_names = clean_up_managers_by_district(
+		set(((worker.manager_name, worker.district) for worker in workers))
+	)
 	workers_handled_while_writing_managers_files = 0
 	handled_managers = []
 
 	for manager_name, district in all_managers_names:
-		manager_workers = [worker for worker in workers if worker.manager_name == manager_name]
+		manager_workers = filter(lambda worker: worker.manager_name == manager_name, workers)
 		manager = Manager(name=manager_name, business_unit=district)
 		manager.add_workers(
 			*manager_workers
@@ -87,3 +89,19 @@ def write_files(workers: Iterable[Worker]) -> None:
 	if workers_handled_while_writing_managers_files > workers_handled_while_writing_districts_files:
 		logger.info("Конечное количество обработанных работников больше изначального, ибо у некоторых " + \
 					   "менеджеров определены несколько регионов - файлы дублируются в папку каждого региона.")
+
+
+def clean_up_managers_by_district(managers: set[tuple[str, str]]) -> set[tuple[str, str]]:
+	managers_and_districts_amount = {}
+	for tuple_ in managers:
+		manager_name, _ = tuple_
+		try:
+			managers_and_districts_amount[manager_name].append(tuple_)
+		except KeyError:
+			managers_and_districts_amount[manager_name] = [tuple_]
+	for manager_name, tuples in managers_and_districts_amount.items():
+		if len(tuples) > 1:
+			for tuple_ in tuples:
+				managers.discard(tuple_)
+			managers.add((manager_name, "Общее"))
+	return managers
