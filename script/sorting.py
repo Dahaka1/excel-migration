@@ -85,7 +85,6 @@ def write_files(workers: Iterable[Worker]) -> None:
 
 	logger.info(f"Файлы по каждому менеджеру и каждому региону успешно отсортированы и записаны. " + \
 				  f"Всего в файлах по менеджерам работников определено: {workers_handled_while_writing_managers_files}")
-
 	if workers_handled_while_writing_managers_files > workers_handled_while_writing_districts_files:
 		logger.info("Конечное количество обработанных работников больше изначального, ибо у некоторых " + \
 					   "менеджеров определены несколько регионов - файлы дублируются в папку каждого региона.")
@@ -103,5 +102,5 @@ def clean_up_managers_by_district(managers: set[tuple[str, str]]) -> set[tuple[s
 		if len(tuples) > 1:
 			for tuple_ in tuples:
 				managers.discard(tuple_)
-			managers.add((manager_name, "Общее"))
+			managers.add((manager_name, config.SEVERAL_DISTRICTS_MANAGER_FILES_PATH))
 	return managers

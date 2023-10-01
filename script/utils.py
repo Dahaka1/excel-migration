@@ -1,15 +1,13 @@
 import keyboard
 
 
-def initiate_action(action_description: str, button_chr: str) -> bool:
+def initiate_action(action_description: str, button_chrs: str) -> bool:
 	"""
 	Нажатие горячей клавиши.
 	"""
-	if len(button_chr) > 1:
-		raise ValueError("Invalid hotkey")
 	print(action_description)
 	while True:
-		if keyboard.read_key() == button_chr:
+		if keyboard.read_key().lower() in button_chrs:
 			return True
 		else:
 			return False

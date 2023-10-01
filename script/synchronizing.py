@@ -22,6 +22,8 @@ def update_workers_paying_amount(workers: tuple[Worker], updating_wb: Workbook, 
 	if config.NULL_VALUE in districts_names:
 		logger.warning(f"В основном файле найдены работники со значением региона '{config.NULL_VALUE}' "
 					   f"(неопределенный регион). Их данные не будут обновлены!")
+	if config.SEVERAL_DISTRICTS_MANAGER_FILES_PATH in os.listdir(config.OUTPUT_PATH):
+		districts_names.add(config.SEVERAL_DISTRICTS_MANAGER_FILES_PATH)
 	updated_workers_result = []
 	for district_name in districts_names:
 		if district_name != config.NULL_VALUE:
@@ -48,9 +50,9 @@ def update_workers_paying_amount(workers: tuple[Worker], updating_wb: Workbook, 
 					f"{len(updated_workers_result)}. Итоговый файл находится в директории '{config.OUTPUT_PATH}'.")
 		time.sleep(1)  # иначе строки чет путаются порядком
 		advanced_info = initiate_action(
-			f"Нажмите '{config.ADVANCED_SYNC_VIEW_BUTTON}', чтобы получить расширенные данные об обновлении."
+			f"Нажмите '{config.ADVANCED_SYNC_VIEW_BUTTONS[0]}', чтобы получить расширенные данные об обновлении."
 			f"\nИли нажмите \"Enter\", чтобы выйти.",
-			config.ADVANCED_SYNC_VIEW_BUTTON
+			config.ADVANCED_SYNC_VIEW_BUTTONS
 		)
 		if advanced_info:
 			print("\n" + Worker.get_updating_info(updated_workers_result))
