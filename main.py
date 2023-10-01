@@ -34,4 +34,4 @@ def main():
 
 if __name__ == '__main__':
 	main()
-	input("\nPress any key to exit ")
+	input("\nНажмите \"Enter\", чтобы выйти ")

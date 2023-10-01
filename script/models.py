@@ -37,13 +37,13 @@ class Worker:
 		"""
 		Подробности об обновлении работников в основном файле.
 		"""
-		managers_full_names = [f"- {worker.manager_name}" for worker in updated_workers]
+		managers_full_names = [f"- {worker.manager_name}" + "\n" for worker in updated_workers]
 		workers_with_updates = [
 			(f"- {worker.name} (регион '{worker.district}', менеджер {worker.manager_name.split()[0]}): "
 			 f"выплата {worker.paying_amount}₽")
 			for worker in updated_workers
 		]
-		return f"Менеджеры, внесшие изменения:\n {', '.join(set(managers_full_names))}\n\n" \
+		return f"Менеджеры, внесшие изменения:\n{''.join(set(managers_full_names))}\n\n" \
 			   f"Измененные работники:\n" + '\n'.join(workers_with_updates)
 
 
